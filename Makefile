@@ -21,7 +21,7 @@ endif
 
 .PHONY: test
 test:
-	$(VERBOSE) nosetests ./
+	$(VERBOSE) nosetests ./tests/test_meal_parser.py
 .PHONY: smoke
 smoke:
 	$(VERBOSE) nosetests ./

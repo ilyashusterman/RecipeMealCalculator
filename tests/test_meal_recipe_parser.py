@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from parsers.meal_parser import MealParser
+from parsers.meal_recipe_parser import MealParser
 
 
-class TestMealParser(TestCase):
+class TestMealRecipeParser(TestCase):
     """
     TestMealParser: Test Cases for parse meal entity from given url
     """

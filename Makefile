@@ -8,7 +8,7 @@ export SHELL=/bin/bash
 ## Define repositories dependencies paths
 
 ## Make sure of current python path
-export PYTHONPATH=$(pwd):./
+export PYTHONPATH=$(pwd)
 
 self := $(abspath $(lastword $(MAKEFILE_LIST)))
 parent := $(dir $(self))
@@ -21,7 +21,7 @@ endif
 
 .PHONY: test
 test:
-	$(VERBOSE) nosetests ./tests/test_meal_parser.py
+	$(VERBOSE) nosetests ./tests/test_meal_recipe_parser.py
 .PHONY: smoke
 smoke:
 	$(VERBOSE) nosetests ./

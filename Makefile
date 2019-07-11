@@ -21,7 +21,14 @@ endif
 
 .PHONY: test
 test:
-	$(VERBOSE) nosetests ./tests/test_meal_recipe_parser.py
+	$(VERBOSE) nosetests ./tests
 .PHONY: smoke
 smoke:
 	$(VERBOSE) nosetests ./
+.PHONY: install
+install:
+	$(VERBOSE) pip install -r requirements.txt
+.PHONY: inspect
+inspect:
+	$(VERBOSE) pylint --ignore-patterns=venv,Makefile,README,requirements ./*
+

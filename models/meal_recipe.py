@@ -1,3 +1,3 @@
 from collections import namedtuple
 
-MealRecipe = namedtuple('MealRecipe', ['name'])
+Recipe = namedtuple('Recipe', ['name', 'ingredients'])

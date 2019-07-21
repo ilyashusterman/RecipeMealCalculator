@@ -16,3 +16,9 @@ class RecipesApi:
             raise Exception(
                 'Url not valid url %s %s' % (url, response.content))
         return response.text
+
+
+class TastyApi(RecipesApi):
+    """
+    TastyApi: fetching tasty list recipes url and search recipes by query meal
+    """

@@ -7,6 +7,7 @@ class Recipe(ToDictMixin):
     """
     def __init__(self, **kargs):
         self.name = kargs.pop('name', 'UNDEFINED_RECIPE_NAME')
+        self.url = kargs.pop('url', None)
         self.description = kargs.pop('description', None)
         self.ingredients = kargs.pop('ingredients', [])
         self.category = kargs.pop('category', None)

@@ -11,9 +11,9 @@ class TestRecipeParser(TestCase):
     """
     def setUp(self) -> None:
         self.recipe_parser = TastyHtmlRecipeParser()
-        self.meal_html_mock = str(load_mock_file('tests/mock/pancake.html'), 'utf-8')
+        self.tasty_recipe_html_mock = str(load_mock_file('tests/mock/pancake.html'), 'utf-8')
 
     def test_html_to_recipe(self):
-        recipe = self.recipe_parser.html_to_recipe(self.meal_html_mock)
+        recipe = self.recipe_parser.html_to_recipe(self.tasty_recipe_html_mock)
         self.assertIsInstance(recipe, Recipe)
         self.assertEqual(len(recipe.ingredients), 12)

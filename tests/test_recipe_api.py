@@ -1,6 +1,6 @@
 from unittest import TestCase, skip
 
-from api.recipes_api import RecipesApi
+from api.recipes_api import RecipesApi, TastyApi
 from tests import save_mock_file
 
 
@@ -21,3 +21,7 @@ class TestMealApi(TestCase):
         self.assertIsInstance(content, str)
         content = content.encode('utf-8')
         save_mock_file(filename='%s.html' % filename, content=content)
+
+    def test_find_recipes_urls(self):
+        api = TastyApi()
+        assert False, api.find_recipes_urls('pancake')

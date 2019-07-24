@@ -53,3 +53,7 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
         new_key = key.split('recipe')[1] if 'recipe' in key else key
         key = new_key.lower()
         return cls.RECIPE_KEYWORDS.get(key, key)
+
+    @classmethod
+    def recipes_lookup(self, raw_soup):
+        raw_soup.find(type='application/ld+json')

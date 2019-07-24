@@ -1,5 +1,7 @@
 from requests import get
 
+from parsers.html_recipe_parser import TastyHtmlRecipeParser
+
 
 class RecipesApi:
     """
@@ -18,7 +20,15 @@ class RecipesApi:
         return response.text
 
 
-class TastyApi(RecipesApi):
+class TastyApi(RecipesApi, TastyHtmlRecipeParser):
     """
     TastyApi: fetching tasty list recipes url and search recipes by query meal
     """
+    BASE_URL =  'https://tasty.co/'
+    QUERY_SEARCH_FORMAT = 'search?q=%s'
+
+    @classmethod
+    def find_recipes_urls(cls, query):
+        url_search = '%s%s' % (cls.BASE_URL, cls.QUERY_SEARCH_FORMAT % query)
+        raw_recipes = cls.get_html_text(url_search)
+        # cls.parse_

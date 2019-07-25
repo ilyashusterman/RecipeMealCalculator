@@ -1,5 +1,5 @@
 import json
-from itertools import islice
+
 
 from bs4 import BeautifulSoup
 
@@ -18,11 +18,21 @@ class HtmlRecipeParserMixin:
         :param raw_html: str
         :return: Recipe
         """
+        recipe_raw = cls.from_html_to_recipe_dict(raw_html)
+        return Recipe.from_raw_dict(recipe_raw)
+
+    @classmethod
+    def from_html_to_recipe_dict(cls, raw_html):
+        """
+
+        :param raw_html: str
+        :return: dict
+        """
         raw_soup = cls.get_raw_soup(raw_html)
         recipe_element = cls.recipe_lookup(raw_soup)
         recipe_json = json.loads(recipe_element.text)
         recipe_raw = cls.beautify_recipe_json(recipe_json)
-        return Recipe.from_raw_dict(recipe_raw)
+        return recipe_raw
 
     @classmethod
     def get_raw_soup(cls, raw_html):
@@ -63,7 +73,12 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
         return cls.RECIPE_KEYWORDS.get(key, key)
 
     @classmethod
-    def recipes_lookup(cls, raw_html):
+    def find_recipes_from_html(cls, raw_html):
+        """
+
+        :param raw_html: str
+        :return: recipes generator
+        """
         raw_soup = cls.get_raw_soup(raw_html=raw_html)
         for raw_query in raw_soup.find_all('a', class_='feed-item analyt-unit-tap'):
             raw_dict = {

@@ -1,7 +1,7 @@
 from unittest import TestCase, skip
 
 from api.recipes_api import RecipesApi, TastyApi
-from tests import save_mock_file
+from tests import save_mock_file, load_mock_file
 
 
 class TestMealApi(TestCase):
@@ -27,3 +27,10 @@ class TestMealApi(TestCase):
         api = TastyApi()
         recipes = api.find_recipes_with_urls('pancake')
         self.assertEqual(len(list(recipes)), 23)
+
+    def test_load_recipes(self):
+        api = TastyApi()
+        tasty_recipes_html_mock = str(load_mock_file('tests/mock/pancakes_recipes_search.html'), 'utf-8')
+        recipes = api.find_recipes_from_html(tasty_recipes_html_mock)
+        recipes = api.load_recipes(recipes)
+        assert False, list(recipes)

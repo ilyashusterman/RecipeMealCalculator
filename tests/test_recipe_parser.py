@@ -20,5 +20,5 @@ class TestRecipeParser(TestCase):
         self.assertEqual(len(recipe.ingredients), 12)
 
     def test_recipes_lookup(self):
-        recipes = self.recipe_parser.recipes_lookup(self.tasty_recipes_html_mock)
+        recipes = self.recipe_parser.find_recipes_from_html(self.tasty_recipes_html_mock)
         self.assertEqual(len(list(recipes)), 23)

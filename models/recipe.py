@@ -5,6 +5,8 @@ class Recipe(ToDictMixin):
     """
     Recipe Model persist and looku
     """
+    EXCLUDED_UPDATE = ['url']
+
     def __init__(self, **kargs):
         self.name = kargs.pop('name', 'UNDEFINED_RECIPE_NAME')
         self.url = kargs.pop('url', None)
@@ -20,4 +22,6 @@ class Recipe(ToDictMixin):
 
     def update_from_raw_dict(self, kargs):
         for key, value in self.__dict__.items():
-            self.__dict__[key] = kargs[key]
+            if key not in self.EXCLUDED_UPDATE:
+                self.__dict__[key] = kargs[key]
+

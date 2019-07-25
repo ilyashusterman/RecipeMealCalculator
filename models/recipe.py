@@ -3,7 +3,7 @@ from models.dict_mixin import ToDictMixin
 
 class Recipe(ToDictMixin):
     """
-    Recipe Model
+    Recipe Model persist and looku
     """
     def __init__(self, **kargs):
         self.name = kargs.pop('name', 'UNDEFINED_RECIPE_NAME')
@@ -18,3 +18,6 @@ class Recipe(ToDictMixin):
     def from_raw_dict(cls, kargs):
         return cls(**kargs)
 
+    def update_from_raw_dict(self, kargs):
+        for key, value in self.__dict__.items():
+            self.__dict__[key] = kargs[key]

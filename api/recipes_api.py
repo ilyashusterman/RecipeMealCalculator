@@ -28,10 +28,7 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
     QUERY_SEARCH_FORMAT = 'search?q=%s'
 
     @classmethod
-    def find_recipes_urls(cls, query):
+    def find_recipes_with_urls(cls, query):
         url_search = '%s%s' % (cls.BASE_URL, cls.QUERY_SEARCH_FORMAT % query)
         raw_recipes = cls.get_html_text(url_search)
-        with open('pancakes_recipes_search.html', 'w') as f:
-            f.write(raw_recipes)
-
         return cls.recipes_lookup(raw_recipes)

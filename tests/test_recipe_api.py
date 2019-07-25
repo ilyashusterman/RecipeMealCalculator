@@ -24,4 +24,4 @@ class TestMealApi(TestCase):
 
     def test_find_recipes_urls(self):
         api = TastyApi()
-        assert False, api.find_recipes_urls('pancake')
+        # assert False, api.find_recipes_urls('pancake')

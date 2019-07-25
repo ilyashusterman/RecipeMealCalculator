@@ -22,6 +22,8 @@ class TestMealApi(TestCase):
         content = content.encode('utf-8')
         save_mock_file(filename='%s.html' % filename, content=content)
 
+    @skip('Require api call to wait ')
     def test_find_recipes_urls(self):
         api = TastyApi()
-        # assert False, api.find_recipes_urls('pancake')
+        recipes = api.find_recipes_with_urls('pancake')
+        self.assertEqual(len(list(recipes)), 23)

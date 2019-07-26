@@ -2,6 +2,7 @@ import logging
 
 from requests import get
 
+from models.exceptions import UpdateRecipeException
 from models.recipes_lookup import RecipesLookup
 from parsers.html_recipe_parser import TastyHtmlRecipeParser
 
@@ -11,12 +12,12 @@ class RecipesApi:
     RecipesApi: responsible for fetching recipes
     """
     @classmethod
-    def get_html_text(cls, url):
+    def get_html_text(cls, url, headers=None):
         """
         :param url: str
         :return: str
         """
-        response = get(url)
+        response = get(url) if headers is None else get(url, headers=headers)
         if response.status_code != 200:
             raise Exception(
                 'Url not valid url %s %s' % (url, response.content))
@@ -29,6 +30,10 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
     """
     BASE_URL = 'https://tasty.co/'
     QUERY_SEARCH_FORMAT = 'search?q=%s'
+
+    HEADERS = {
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
+    }
 
     @classmethod
     def find_loaded_recipes(cls, query):
@@ -54,10 +59,25 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
 
     @classmethod
     def load_recipe(cls, recipe):
-        raw_recipe_html = cls.get_html_text(recipe.url)
-        raw_recipe_dict = cls.from_html_to_recipe_dict(raw_recipe_html)
         try:
-            return recipe.update_from_raw_dict(raw_recipe_dict)
+            raw_recipe_html = cls.get_html_text(recipe.url, headers=cls.HEADERS)
         except Exception as e:
             logging.error('Could not load recipe %s correctly %s' % (recipe.url, e))
-        return recipe
+        else:
+            cls.update_recipe_content(raw_recipe_html, recipe)
+            # with open('test_fluffy_pancakes.html', 'w') as f:
+            #     f.write(raw_recipe_html)
+            # exit(0)
+        finally:
+            return recipe
+
+    @classmethod
+    def update_recipe_content(cls, raw_recipe_html, recipe):
+        raw_recipe_dict = cls.from_html_to_recipe_dict(raw_recipe_html)
+        try:
+            recipe.update_from_raw_dict(raw_recipe_dict)
+        except UpdateRecipeException as e:
+            logging.error(e)
+            return False
+        else:
+            return True

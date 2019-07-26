@@ -1,4 +1,5 @@
 from models.dict_mixin import ToDictMixin
+from models.exceptions import UpdateRecipeException
 
 
 class Recipe(ToDictMixin):
@@ -21,7 +22,12 @@ class Recipe(ToDictMixin):
         return cls(**kargs)
 
     def update_from_raw_dict(self, kargs):
+        missing_keys = {}
         for key, value in self.__dict__.items():
             if key not in self.EXCLUDED_UPDATE:
-                self.__dict__[key] = kargs[key]
-
+                try:
+                    self.__dict__[key] = kargs[key]
+                except KeyError as e:
+                    missing_keys[key] = 'missing'
+        if missing_keys:
+            raise UpdateRecipeException(missing_keys, kargs.keys())

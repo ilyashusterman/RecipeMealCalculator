@@ -1,5 +1,5 @@
 import json
-
+import logging
 
 from bs4 import BeautifulSoup
 
@@ -29,10 +29,20 @@ class HtmlRecipeParserMixin:
         :return: dict
         """
         raw_soup = cls.get_raw_soup(raw_html)
-        recipe_element = cls.recipe_lookup(raw_soup)
-        recipe_json = json.loads(recipe_element.text)
-        recipe_raw = cls.beautify_recipe_json(recipe_json)
+        recipe_string = cls.recipe_lookup(raw_soup)
+        recipe_dict = cls.get_recipe_dict(recipe_string)
+        recipe_raw = cls.beautify_recipe_json(recipe_dict)
         return recipe_raw
+
+    @classmethod
+    def get_recipe_dict(cls, recipe_string):
+        recipe_dict = {}
+        try:
+            recipe_dict = json.loads(recipe_string)
+        except json.decoder.JSONDecodeError as e:
+            logging.error('Could json not parse recipe dict %s ')
+        finally:
+            return recipe_dict
 
     @classmethod
     def get_raw_soup(cls, raw_html):
@@ -57,7 +67,13 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
 
     @classmethod
     def recipe_lookup(cls, raw_soup):
-        return raw_soup.find(type='application/ld+json')
+        elements = raw_soup.find_all(type='application/ld+json')
+        for element in elements:
+            return cls.get_cleaned_recipe(element)
+
+    @classmethod
+    def get_cleaned_recipe(cls, element):
+        return element.text.strip().replace(',,', ',')
 
     @classmethod
     def beautify_recipe_json(cls, recipe_json):
@@ -81,8 +97,9 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
         """
         raw_soup = cls.get_raw_soup(raw_html=raw_html)
         for raw_query in raw_soup.find_all('a', class_='feed-item analyt-unit-tap'):
-            raw_dict = {
-                'url': raw_query['href'],
-                'name': raw_query.h6.text
-            }
-            yield Recipe.from_raw_dict(raw_dict)
+            if 'recipe' in raw_query['href']:
+                raw_dict = {
+                    'url': raw_query['href'],
+                    'name': raw_query.h6.text
+                }
+                yield Recipe.from_raw_dict(raw_dict)

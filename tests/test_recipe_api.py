@@ -33,4 +33,4 @@ class TestMealApi(TestCase):
         tasty_recipes_html_mock = str(load_mock_file('tests/mock/pancakes_recipes_search.html'), 'utf-8')
         recipes = api.find_recipes_from_html(tasty_recipes_html_mock)
         recipes = api.load_recipes(recipes)
-        assert False, list(recipes)
+        self.assertEqual(next(recipes).category, 'Breakfast')

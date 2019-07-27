@@ -34,3 +34,4 @@ class TestMealApi(TestCase):
         recipes = api.find_recipes_from_html(tasty_recipes_html_mock)
         recipes = api.load_recipes(recipes)
         self.assertEqual(next(recipes).category, 'Breakfast')
+        self.assertIsInstance(recipes, type((i for i in range(1))))

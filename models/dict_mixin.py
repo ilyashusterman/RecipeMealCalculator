@@ -20,3 +20,10 @@ class ToDictMixin:
             return self._traverse_dict(value.__dict__)
         else:
             return value
+
+
+class FromDictMixin:
+
+    @classmethod
+    def from_raw_dict(cls, kargs):
+        return cls(**kargs)

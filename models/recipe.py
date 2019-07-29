@@ -1,8 +1,9 @@
 from models.dict_mixin import ToDictMixin
+from models.dict_mixin import FromDictMixin
 from models.exceptions import UpdateRecipeException
 
 
-class Recipe(ToDictMixin):
+class Recipe(ToDictMixin, FromDictMixin):
     """
     Recipe Model persist and looku
     """
@@ -16,10 +17,7 @@ class Recipe(ToDictMixin):
         self.category = kargs.pop('category', None)
         self.cuisine = kargs.pop('cuisine', None)
         self.date_published = kargs.pop('date_published', None)
-
-    @classmethod
-    def from_raw_dict(cls, kargs):
-        return cls(**kargs)
+        self.nutrition_facts = kargs.pop('nutrition_facts', None)
 
     def update_from_raw_dict(self, kargs):
         missing_keys = {}
@@ -31,3 +29,14 @@ class Recipe(ToDictMixin):
                     missing_keys[key] = 'missing'
         if missing_keys:
             raise UpdateRecipeException(missing_keys, kargs.keys())
+
+
+class NutritionFacts(ToDictMixin, FromDictMixin):
+
+    def __init__(self, **kargs):
+        self.calories = kargs.pop('calories', None)
+        self.carbohydrate = kargs.pop('carbohydrate', None)
+        self.fat = kargs.pop('fat', None)
+        self.fiber = kargs.pop('fiber', None)
+        self.protein = kargs.pop('protein', None)
+        self.sugar = kargs.pop('sugar', None)

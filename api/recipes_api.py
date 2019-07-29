@@ -3,7 +3,7 @@ import logging
 from requests import get
 
 from models.exceptions import UpdateRecipeException
-from models.recipes_lookup import RecipesLookup
+from lookup.concurrent_lookup import ConcurrentLookup
 from parsers.html_recipe_parser import TastyHtmlRecipeParser
 
 
@@ -37,21 +37,21 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
 
     @classmethod
     def find_loaded_recipes(cls, query):
-        unpacked_recipes = cls.find_recipes_with_urls(query)
+        unpacked_recipes = cls.find_unpacked_recipes_with_urls(query)
         return cls.load_recipes(unpacked_recipes)
 
     @classmethod
     def load_recipes(cls, unpacked_recipes):
-        recipes_lookup = RecipesLookup(unpacked_recipes, load_recipe_func=cls.load_recipe)
+        recipes_lookup = ConcurrentLookup(unpacked_recipes, load_recipe_func=cls.load_recipe)
         recipes_lookup.load_recipes()
         return recipes_lookup.recipes
 
     @classmethod
-    def find_recipes_with_urls(cls, query):
+    def find_unpacked_recipes_with_urls(cls, query):
         """
 
         :param query: str
-        :return: RecipesLookup
+        :return: [] Recipes
         """
         url_search = '%s%s' % (cls.BASE_URL, cls.QUERY_SEARCH_FORMAT % query)
         raw_recipes = cls.get_html_text(url_search)

@@ -3,7 +3,7 @@ import logging
 
 from bs4 import BeautifulSoup
 
-from models.recipe import Recipe
+from models.recipe import Recipe, NutritionFacts
 
 
 class HtmlRecipeParserMixin:
@@ -31,7 +31,7 @@ class HtmlRecipeParserMixin:
         raw_soup = cls.get_raw_soup(raw_html)
         recipe_string = cls.recipe_lookup(raw_soup)
         recipe_dict = cls.get_recipe_dict(recipe_string)
-        recipe_raw = cls.beautify_recipe_json(recipe_dict)
+        recipe_raw = cls.beautify_dict_keys(recipe_dict, cls.beautify_recipe_key)
         return recipe_raw
 
     @classmethod
@@ -54,7 +54,14 @@ class HtmlRecipeParserMixin:
         raise NotImplemented
 
     @classmethod
-    def beautify_recipe_json(cls, recipe_json):
+    def beautify_dict_keys(cls, raw_dict, beautify_keys):
+        return {
+            beautify_keys(key): value
+            for key, value in raw_dict.items()
+        }
+
+    @classmethod
+    def beautify_recipe_key(cls, key):
         raise NotImplemented
 
 
@@ -62,7 +69,8 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
 
     RECIPE_KEYWORDS = {
         'ingredient': 'ingredients',
-        'datepublished': 'date_published'
+        'datepublished': 'date_published',
+        'nutrition': 'nutrition_facts'
     }
 
     @classmethod
@@ -76,11 +84,14 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
         return element.text.strip().replace(',,', ',')
 
     @classmethod
-    def beautify_recipe_json(cls, recipe_json):
-        return {
-            cls.beautify_recipe_key(key): value
-            for key, value in recipe_json.items()
+    def beautify_dict_keys(cls, raw_dict, beautify_keys):
+        beautified_recipe = super().beautify_dict_keys(raw_dict, beautify_keys)
+        nutrition_facts = {
+             key.split('Content')[0]: value
+             for key, value in beautified_recipe['nutrition_facts'].items()
         }
+        beautified_recipe['nutrition_facts'] = NutritionFacts.from_raw_dict(nutrition_facts)
+        return beautified_recipe
 
     @classmethod
     def beautify_recipe_key(cls, key):

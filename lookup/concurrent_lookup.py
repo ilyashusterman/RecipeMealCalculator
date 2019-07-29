@@ -1,9 +1,7 @@
 from concurrent.futures import ProcessPoolExecutor
 
-from models.dict_mixin import ToDictMixin
 
-
-class RecipesLookup(ToDictMixin):
+class ConcurrentLookup:
 
     def __init__(self, recipes=None, load_recipe_func=None):
         self.recipes = recipes

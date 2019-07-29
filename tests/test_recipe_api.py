@@ -22,11 +22,19 @@ class TestMealApi(TestCase):
         content = content.encode('utf-8')
         save_mock_file(filename='%s.html' % filename, content=content)
 
-    @skip('Require api call to wait ')
-    def test_find_recipes_urls(self):
+    @skip('Require api call to wait..')
+    def test_find_unpacked_recipes_with_urls(self):
         api = TastyApi()
-        recipes = api.find_recipes_with_urls('pancake')
-        self.assertEqual(len(list(recipes)), 23)
+        unpacked_recipes = api.find_unpacked_recipes_with_urls('pancake')
+        self.assertEqual(len(list(unpacked_recipes)), 18)
+        recipes = api.load_recipes(unpacked_recipes)
+
+    @skip('Require api call to wait..')
+    def test_load_recipes_to_dict(self):
+        api = TastyApi()
+        unpacked_recipes = api.find_unpacked_recipes_with_urls('pancake')
+        recipes = api.load_recipes(unpacked_recipes)
+        self.assertEqual(len(next(recipes).to_dict()), 8)
 
     def test_load_recipes(self):
         api = TastyApi()

@@ -25,7 +25,7 @@ class Recipe(ToDictMixin, FromDictMixin):
             if key not in self.EXCLUDED_UPDATE:
                 try:
                     self.__dict__[key] = kargs[key]
-                except KeyError as e:
+                except KeyError:
                     missing_keys[key] = 'missing'
         if missing_keys:
             raise UpdateRecipeException(missing_keys, kargs.keys())

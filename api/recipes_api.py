@@ -3,8 +3,9 @@ import logging
 from requests import get
 
 from models.exceptions import UpdateRecipeException
-from lookup.concurrent_lookup import ConcurrentLookup
 from parsers.html_recipe_parser import TastyHtmlRecipeParser
+from lookup.concurrent_lookup import ConcurrentLookup
+from lookup.async_recipes_generator import AsyncRecipesGenerator
 
 
 class RecipesApi:
@@ -36,6 +37,12 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
     }
 
     @classmethod
+    def find_recipes_async(cls, query):
+        return AsyncRecipesGenerator(query,
+                                     cls.find_unpacked_recipes_with_urls,
+                                     cls.load_recipe)
+
+    @classmethod
     def find_loaded_recipes(cls, query):
         unpacked_recipes = cls.find_unpacked_recipes_with_urls(query)
         return cls.load_recipes(unpacked_recipes)
@@ -65,9 +72,6 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
             logging.error('Could not load recipe %s correctly %s' % (recipe.url, e))
         else:
             cls.update_recipe_content(raw_recipe_html, recipe)
-            # with open('test_fluffy_pancakes.html', 'w') as f:
-            #     f.write(raw_recipe_html)
-            # exit(0)
         finally:
             return recipe
 
@@ -77,7 +81,8 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
         try:
             recipe.update_from_raw_dict(raw_recipe_dict)
         except UpdateRecipeException as e:
-            logging.error(e)
+            logging.error('Failed update %s Recipe for url %s Due to %s' % (
+                recipe.name, recipe.url, e))
             return False
         else:
             return True

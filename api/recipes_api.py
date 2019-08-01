@@ -38,6 +38,10 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
 
     @classmethod
     def find_recipes_async(cls, query):
+        return cls.get_recipes_generator(query)
+
+    @classmethod
+    def get_recipes_generator(cls, query):
         return AsyncRecipesGenerator(query,
                                      cls.find_unpacked_recipes_with_urls,
                                      cls.load_recipe)

@@ -13,11 +13,11 @@ class AsyncRecipesGenerator(AsyncGenerator):
          print(recipe.to_dict())
     """
     def __init__(self, query, lookup_recipe_func, load_recipe_func):
+        super().__init__()
         self.query = query
         self.lookup_recipe_func = lookup_recipe_func
         self.load_recipe_func = load_recipe_func
         self.recipes = None
-        super().__init__()
 
     async def __anext__(self):
         for recipe in self.recipes:

@@ -1,4 +1,4 @@
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 
 
 class ConcurrentLookup:
@@ -12,6 +12,6 @@ class ConcurrentLookup:
         return cls(recipes=recipes)
 
     def load_recipes(self):
-        pool = ProcessPoolExecutor(max_workers=10)
+        pool = ThreadPoolExecutor()
         self.recipes = pool.map(self.load_recipe_func, self.recipes)
         return self.recipes

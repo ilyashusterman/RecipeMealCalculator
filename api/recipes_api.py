@@ -41,9 +41,15 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
         return cls.get_recipes_generator(query)
 
     @classmethod
-    def get_recipes_generator(cls, query):
+    def find_raw_recipes_async(cls, query):
+        return cls.get_recipes_generator(query,
+                                         find_func=cls.find_unpacked_raw_recipes_with_urls)
+
+    @classmethod
+    def get_recipes_generator(cls, query, find_func=None):
+        find_func = cls.find_unpacked_recipes_with_urls if find_func is None else find_func
         return AsyncRecipesGenerator(query,
-                                     cls.find_unpacked_recipes_with_urls,
+                                     find_func,
                                      cls.load_recipe)
 
     @classmethod
@@ -58,7 +64,15 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
         return recipes_lookup.recipes
 
     @classmethod
+    def find_unpacked_raw_recipes_with_urls(cls, query):
+        return cls.find_recipes_with_urls(query, find_func=cls.find_raw_recipes_from_html)
+
+    @classmethod
     def find_unpacked_recipes_with_urls(cls, query):
+        return cls.find_recipes_with_urls(query, find_func=cls.find_recipes_from_html)
+
+    @classmethod
+    def find_recipes_with_urls(cls, query, find_func):
         """
 
         :param query: str
@@ -66,7 +80,7 @@ class TastyApi(RecipesApi, TastyHtmlRecipeParser):
         """
         url_search = '%s%s' % (cls.BASE_URL, cls.QUERY_SEARCH_FORMAT % query)
         raw_recipes = cls.get_html_text(url_search)
-        return cls.find_recipes_from_html(raw_recipes)
+        return find_func(raw_recipes)
 
     @classmethod
     def load_recipe(cls, recipe):

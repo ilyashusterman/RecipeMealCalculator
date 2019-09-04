@@ -40,3 +40,10 @@ class NutritionFacts(ToDictMixin, FromDictMixin):
         self.fiber = kargs.pop('fiber', None)
         self.protein = kargs.pop('protein', None)
         self.sugar = kargs.pop('sugar', None)
+
+
+class RawRecipe(Recipe):
+
+    def __init__(self, **kargs):
+        super().__init__(**kargs)
+        self.raw_html = kargs.pop('raw_html')

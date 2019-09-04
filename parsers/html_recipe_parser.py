@@ -3,7 +3,9 @@ import logging
 
 from bs4 import BeautifulSoup
 
-from models.recipe import Recipe, NutritionFacts
+from models.recipe import Recipe
+from models.recipe import NutritionFacts
+from models.recipe import RawRecipe
 
 
 class HtmlRecipeParserMixin:
@@ -106,11 +108,41 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
         :param raw_html: str
         :return: recipes generator
         """
+        def raw_dict_func(raw_query, raw_html=None):
+            return {
+                'url': raw_query['href'],
+                'name': raw_query.h6.text
+            }
+        return cls.parse_recipes_from_html(raw_html, raw_dict_func)
+
+    @classmethod
+    def find_raw_recipes_from_html(cls, raw_html):
+        def raw_dict_func(raw_query, raw_html=None):
+            return {
+                'url': raw_query['href'],
+                'name': raw_query.h6.text,
+                'raw_html': raw_html
+            }
+        return cls.parse_recipes_from_html(raw_html, raw_dict_func, recipe_model=RawRecipe)
+
+        # raw_soup = cls.get_raw_soup(raw_html=raw_html)
+        # for raw_query in raw_soup.find_all('a', class_='feed-item analyt-unit-tap'):
+        #     if 'recipe' in raw_query['href']:
+        #         raw_dict = {
+        #             'url': raw_query['href'],
+        #             'name': raw_query.h6.text
+        #         }
+        #         yield Recipe.from_raw_dict(raw_dict)
+
+    @classmethod
+    def parse_recipes_from_html(cls, raw_html, raw_dict_func, recipe_model=Recipe):
+        """
+
+        :param raw_html: str
+        :return: recipes generator
+        """
         raw_soup = cls.get_raw_soup(raw_html=raw_html)
         for raw_query in raw_soup.find_all('a', class_='feed-item analyt-unit-tap'):
             if 'recipe' in raw_query['href']:
-                raw_dict = {
-                    'url': raw_query['href'],
-                    'name': raw_query.h6.text
-                }
-                yield Recipe.from_raw_dict(raw_dict)
+                raw_dict = raw_dict_func(raw_query, raw_html)
+                yield recipe_model.from_raw_dict(raw_dict)

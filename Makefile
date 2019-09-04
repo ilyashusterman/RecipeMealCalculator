@@ -25,10 +25,12 @@ test:
 .PHONY: smoke
 smoke:
 	$(VERBOSE) nosetests ./
+.PHONY: setup
+setup:
+	$(VERBOSE) source venv/bin/activate
 .PHONY: install
 install:
 	$(VERBOSE) pip install -r requirements.txt
 .PHONY: inspect
 inspect:
 	$(VERBOSE) pylint --ignore-patterns=venv,Makefile,README,requirements ./*
-

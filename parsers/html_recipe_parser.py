@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 from models.recipe import Recipe
 from models.recipe import NutritionFacts
 from models.recipe import RawRecipe
-from parsers.recipe_parser import RecipeParser
 
 class HtmlRecipeParserMixin:
     """

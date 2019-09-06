@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from models.recipe import Recipe
 from models.recipe import NutritionFacts
 from models.recipe import RawRecipe
-
+from parsers.recipe_parser import RecipeParser
 
 class HtmlRecipeParserMixin:
     """
@@ -124,15 +124,6 @@ class TastyHtmlRecipeParser(HtmlRecipeParserMixin):
                 'raw_html': raw_html
             }
         return cls.parse_recipes_from_html(raw_html, raw_dict_func, recipe_model=RawRecipe)
-
-        # raw_soup = cls.get_raw_soup(raw_html=raw_html)
-        # for raw_query in raw_soup.find_all('a', class_='feed-item analyt-unit-tap'):
-        #     if 'recipe' in raw_query['href']:
-        #         raw_dict = {
-        #             'url': raw_query['href'],
-        #             'name': raw_query.h6.text
-        #         }
-        #         yield Recipe.from_raw_dict(raw_dict)
 
     @classmethod
     def parse_recipes_from_html(cls, raw_html, raw_dict_func, recipe_model=Recipe):

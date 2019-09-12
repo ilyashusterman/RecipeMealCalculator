@@ -5,14 +5,14 @@ import logging
 
 
 from api.recipes_api import TastyApi
-from parsers.recipe_converter import RecipeConverter
+from parsers.recipe_converter import RecipeConverterMixin
 
 TASTY_API = TastyApi()
 
 def get_recipe(recipe, **kargs):
     percentages = kargs.get('percentages', None)
     recipe = recipe.to_dict() if percentages is False else \
-        RecipeConverter.get_percentages(recipe)
+        RecipeConverterMixin.get_percentages(recipe)
 
     return recipe
 
